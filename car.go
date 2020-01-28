@@ -20,7 +20,6 @@ const MaxHandling = 1
 type Car struct {
 	ID           int    `json:"id"`
 	DriverName   string `json:"driver_name"`
-	Brand        string `json:"brand"`
 	TopSpeed     int    `json:"top_speed"`
 	Acceleration int    `json:"acceleration"`
 	Handling     int    `json:"handling"`

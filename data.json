@@ -3,35 +3,35 @@
 		{
 			"id": 1,
 			"driver_name": "Anakin Skywalker",
-			"top_spped": 500,
+			"top_speed": 500,
 			"acceleration": 10,
 			"handling": 10
 		},
 		{
 			"id": 2,
 			"driver_name": "Sebulba",
-			"top_spped": 500,
+			"top_speed": 500,
 			"acceleration": 10,
 			"handling": 10
 		},
-		{
 		{
 			"id": 3,
 			"driver_name": "Dud Bolt",
-			"top_spped": 500,
-			"acceleration": 10,
-			"handling": 10
-		},
-			"id": 4,
-			"driver_name": "Ratts Tyrell",
-			"top_spped": 500,
+			"top_speed": 500,
 			"acceleration": 10,
 			"handling": 10
 		},
 		{
-			"id": 3,
+			"id": 4,
+			"driver_name": "Ratts Tyrell",
+			"top_speed": 500,
+			"acceleration": 10,
+			"handling": 10
+		},
+		{
+			"id": 5,
 			"driver_name": "Ben Quadrinaros",
-			"top_spped": 500,
+			"top_speed": 500,
 			"acceleration": 10,
 			"handling": 10
 		}

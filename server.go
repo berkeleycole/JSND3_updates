@@ -15,14 +15,19 @@ type Server struct {
 
 // NewServer returns a new http server
 func NewServer() (*Server, error) {
-	return nil, nil
+	router := makeRouter()
+	server := Server{
+		router: router,
+	}
+
+	return &server, nil
 }
 
 // ServerOpt defines an option that can be applied to a server
 // to help configure it.
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
+	s.router.ServeHTTP(w, r)
 }
 
 func makeRouter() http.Handler {
@@ -33,7 +38,7 @@ func makeRouter() http.Handler {
 	r.HandleFunc("/cars", listCars).Methods("GET")
 
 	// tracks
-	r.HandleFunc("/tracks", unimplemented).Methods("GET")
+	r.HandleFunc("/tracks", listTracks).Methods("GET")
 
 	// races
 	r.HandleFunc("/races", unimplemented).Methods("GET")
