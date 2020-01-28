@@ -1,0 +1,71 @@
+{
+	"cars": [
+		{
+			"id": 1,
+			"driver_name": "Anakin Skywalker",
+			"top_spped": 500,
+			"acceleration": 10,
+			"handling": 10
+		},
+		{
+			"id": 2,
+			"driver_name": "Sebulba",
+			"top_spped": 500,
+			"acceleration": 10,
+			"handling": 10
+		},
+		{
+		{
+			"id": 3,
+			"driver_name": "Dud Bolt",
+			"top_spped": 500,
+			"acceleration": 10,
+			"handling": 10
+		},
+			"id": 4,
+			"driver_name": "Ratts Tyrell",
+			"top_spped": 500,
+			"acceleration": 10,
+			"handling": 10
+		},
+		{
+			"id": 3,
+			"driver_name": "Ben Quadrinaros",
+			"top_spped": 500,
+			"acceleration": 10,
+			"handling": 10
+		}
+	],
+	"tracks": [
+		{
+			"id": 1,
+			"name": "Executioner",
+			"segments": []
+		},
+		{
+			"id": 2,
+			"name": "Sebulba's Legacy",
+			"segments": []
+		},
+		{
+			"id": 3,
+			"name": "Grabvine Gateway",
+			"segments": []
+		},
+		{
+			"id": 4,
+			"name": "Andobi Mountain Run",
+			"segments": []
+		},
+		{
+			"id": 5,
+			"name": "Dethro's Revenge",
+			"segments": []
+		},
+		{
+			"id": 6,
+			"name": "The Boonta Classic",
+			"segments": []
+		}
+	]
+}
