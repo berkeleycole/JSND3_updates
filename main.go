@@ -2,11 +2,21 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"time"
 )
 
+var dataFile string
+
+func init() {
+	os.Getenv("DATA_FILE")
+}
+
 func main() {
-	server, err := NewServer()
+	service, err := NewRaceService(DataFromJSONFile(dataFile))
+	panicErr(err)
+
+	server, err := NewServer(service)
 	panicErr(err)
 
 	srv := &http.Server{

@@ -3,21 +3,23 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 )
 
 // Server is responsible for exposing the services via HTTP
 type Server struct {
-	router http.Handler
+	router  http.Handler
+	service *RaceService
 }
 
 // NewServer returns a new http server
-func NewServer() (*Server, error) {
-	router := makeRouter()
+func NewServer(service *RaceService) (*Server, error) {
+	router := makeRouter(service)
+
 	server := Server{
-		router: router,
+		router:  router,
+		service: service,
 	}
 
 	return &server, nil
@@ -30,12 +32,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
-func makeRouter() http.Handler {
+func makeRouter(service *RaceService) http.Handler {
 	router := mux.NewRouter()
 	r := router.PathPrefix("/api/").Subrouter()
 
 	// cars
-	r.HandleFunc("/cars", listCars).Methods("GET")
+	r.HandleFunc("/cars", listCars(service)).Methods("GET")
 
 	// tracks
 	r.HandleFunc("/tracks", listTracks).Methods("GET")
@@ -51,16 +53,18 @@ func makeRouter() http.Handler {
 	return router
 }
 
-func listCars(w http.ResponseWriter, r *http.Request) {
-	cars := readFile().Cars
-	err := json.NewEncoder(w).Encode(cars)
-	panicErr(err)
+func listCars(service *RaceService) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		err := json.NewEncoder(w).Encode(service.Cars)
+		panicErr(err)
+	})
 }
 
-func listTracks(w http.ResponseWriter, r *http.Request) {
-	tracks := readFile().Tracks
-	err := json.NewEncoder(w).Encode(tracks)
-	panicErr(err)
+func listTracks(service *RaceService) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		err := json.NewEncoder(w).Encode(service.Tracks)
+		panicErr(err)
+	})
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
@@ -69,23 +73,6 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 
 func unimplemented(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(501)
-}
-
-type dataJSON struct {
-	Cars   []*Car   `json:"cars"`
-	Tracks []*Track `json:"tracks"`
-}
-
-func readFile() dataJSON {
-	f, err := os.Open("./data.json")
-	panicErr(err)
-
-	var data dataJSON
-
-	err = json.NewDecoder(f).Decode(&data)
-	panicErr(err)
-
-	return data
 }
 
 func panicErr(err error) {
