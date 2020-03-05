@@ -1,20 +1,61 @@
 package main
 
+import (
+	"encoding/json"
+	"math/rand"
+	"os"
+)
+
 // MaxTurnDegree represents the absolute value of the maximum
 // degree that a single segment of a track can be.
 const MaxTurnDegree = 90
 
 // A Track is represented as an array of segments
 type Track struct {
-	ID       int       `json:"id"`
-	Name     string    `json:"name"`
-	Segments []float64 `json:"segments"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Segments []int  `json:"segments"`
 }
 
-// A Segment represents a single tile of the race track
-// It has a value for the degree of the turn of that tile.
-// The max for this value is 90 when expressed as a degree
-type Segment struct {
-	Degree  int     `json:"degree"`
-	Percent float64 `json:"percent"`
+func generateTrackSegments(dataFileName string) error {
+	f, err := os.OpenFile(dataFileName, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+
+	var d data
+
+	if err := json.NewDecoder(f).Decode(&d); err != nil {
+		return err
+	}
+
+	f.Close()
+	os.Remove(dataFileName)
+
+	for _, track := range d.Tracks {
+		if len(track.Segments) == 0 {
+			track.Segments = generateTrack(rand.Intn(100) + 120)
+		}
+	}
+
+	f, err = os.OpenFile(dataFileName, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+
+	if err := json.NewEncoder(f).Encode(d); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func generateTrack(totalSegments int) []int {
+	results := make([]int, totalSegments)
+
+	for i := 0; i < totalSegments; i++ {
+		results[i] = rand.Intn(90)
+	}
+
+	return results
 }

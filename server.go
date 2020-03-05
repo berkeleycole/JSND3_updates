@@ -40,7 +40,7 @@ func makeRouter(service *RaceService) http.Handler {
 	r.HandleFunc("/cars", listCars(service)).Methods("GET")
 
 	// tracks
-	r.HandleFunc("/tracks", listTracks).Methods("GET")
+	r.HandleFunc("/tracks", listTracks(service)).Methods("GET")
 
 	// races
 	r.HandleFunc("/races", unimplemented).Methods("GET")

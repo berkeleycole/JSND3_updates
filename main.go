@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -9,10 +10,17 @@ import (
 var dataFile string
 
 func init() {
-	os.Getenv("DATA_FILE")
+	dataFile = os.Getenv("DATA_FILE")
+	if dataFile == "" {
+		dataFile = "data.json"
+	}
 }
 
 func main() {
+	if err := generateTrackSegments(dataFile); err != nil {
+		log.Fatal(err)
+	}
+
 	service, err := NewRaceService(DataFromJSONFile(dataFile))
 	panicErr(err)
 
