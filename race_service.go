@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 )
@@ -11,6 +12,7 @@ import (
 type RaceService struct {
 	Cars   []*Car
 	Tracks []*Track
+	Races  []*Race
 }
 
 // NewRaceService takes the options and returns a new RaceService
@@ -24,6 +26,42 @@ func NewRaceService(opts ...RaceServiceOpt) (*RaceService, error) {
 	}
 
 	return &s, nil
+}
+
+// CreateRace makes a new race
+func (s *RaceService) CreateRace(opts ...RaceOpt) (*Race, error) {
+	id := len(s.Races) + 1
+
+	opts = append(opts, WithID(id))
+
+	race, err := NewRace(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	s.Races = append(s.Races, race)
+
+	return race, nil
+}
+
+// GetRace fetches an existing race
+func (s *RaceService) GetRace(raceID uint) (*Race, error) {
+	if raceID-1 < 1 || raceID > uint(len(s.Races)) {
+		return nil, fmt.Errorf("invalid race id")
+	}
+
+	return s.Races[raceID], nil
+}
+
+// Accelerate exposes the Race's Accelerate method
+func (s *RaceService) Accelerate(raceID uint) error {
+	race, err := s.GetRace(raceID)
+	if err != nil {
+		return err
+	}
+
+	err = race.Accelerate()
+	return nil
 }
 
 // RaceServiceOpt are options for building a RaceService

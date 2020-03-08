@@ -1,24 +1,29 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
 // Race holds all of the information about the race
 type Race struct {
+	ID                   int
 	Track                *Track
 	PlayerID             int
 	clicksSinceLastCheck int
 	Cars                 []*Car
 	Results              *RaceResults
 	actionCh             chan int
-	tickerCh             chan time.Time
+	tickerCh             <-chan time.Time
 	closeCh              chan struct{}
 }
 
 // NewRace constructs a Race from the provided options
 func NewRace(opts ...RaceOpt) (*Race, error) {
-	r := Race{}
+	r := Race{
+		actionCh: make(chan int),
+		closeCh:  make(chan struct{}),
+	}
 
 	for _, opt := range opts {
 		if err := opt.Apply(&r); err != nil {
@@ -41,7 +46,13 @@ Actions:
 
 // Start starts a race
 func (r *Race) Start() error {
+	if r.Results.Status != Unstarted {
+		return fmt.Errorf("race has already started")
+	}
+
 	r.Results.Status = InProgress
+
+	r.tickerCh = time.NewTicker(time.Second).C
 
 	go r.loop()
 
@@ -51,7 +62,6 @@ func (r *Race) Start() error {
 // Finish marks the end of a race
 func (r *Race) Finish() error {
 	close(r.closeCh)
-	close(r.tickerCh)
 	close(r.actionCh)
 
 	return nil
@@ -108,7 +118,7 @@ func (r *Race) loop() {
 			return
 		}
 
-		time.Sleep(time.Second * 1)
+		// time.Sleep(time.Second * 1)
 	}
 }
 
@@ -123,6 +133,66 @@ func (r *Race) Accelerate() error {
 // RaceOpt allows the configuration of a new Race
 type RaceOpt interface {
 	Apply(*Race) error
+}
+
+// WithID sets the id of the Race
+func WithID(id int) RaceOpt {
+	return &withID{id}
+}
+
+type withID struct {
+	id int
+}
+
+func (opt *withID) Apply(r *Race) error {
+	r.ID = opt.id
+
+	return nil
+}
+
+// WithCars sets the cars for the race
+func WithCars(cars []*Car) RaceOpt {
+	return &withCars{cars}
+}
+
+type withCars struct {
+	cars []*Car
+}
+
+func (opt *withCars) Apply(r *Race) error {
+	r.Cars = opt.cars
+
+	return nil
+}
+
+// WithTrack sets the track
+func WithTrack(t Track) RaceOpt {
+	return &withTrack{t}
+}
+
+type withTrack struct {
+	t Track
+}
+
+func (opt *withTrack) Apply(r *Race) error {
+	r.Track = &opt.t
+
+	return nil
+}
+
+// WithPlayerID sets which car a user wants to use
+func WithPlayerID(playerID int) RaceOpt {
+	return &withPlayerID{playerID}
+}
+
+type withPlayerID struct {
+	playerID int
+}
+
+func (opt *withPlayerID) Apply(r *Race) error {
+	r.PlayerID = opt.playerID
+
+	return nil
 }
 
 // RaceResults represent the results of a race

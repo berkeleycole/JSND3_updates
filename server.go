@@ -46,6 +46,7 @@ func makeRouter(service *RaceService) http.Handler {
 	r.HandleFunc("/races", unimplemented).Methods("GET")
 	r.HandleFunc("/races", unimplemented).Methods("POST")
 	r.HandleFunc("/races/{raceID}", unimplemented).Methods("GET")
+	r.HandleFunc("/races/{raceID}", unimplemented).Methods("POST")
 
 	r.HandleFunc("/", notFound)
 	router.HandleFunc("/", notFound)
