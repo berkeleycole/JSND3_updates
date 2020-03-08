@@ -166,16 +166,16 @@ func (opt *withCars) Apply(r *Race) error {
 }
 
 // WithTrack sets the track
-func WithTrack(t Track) RaceOpt {
+func WithTrack(t *Track) RaceOpt {
 	return &withTrack{t}
 }
 
 type withTrack struct {
-	t Track
+	t *Track
 }
 
 func (opt *withTrack) Apply(r *Race) error {
-	r.Track = &opt.t
+	r.Track = opt.t
 
 	return nil
 }

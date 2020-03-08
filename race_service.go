@@ -29,12 +29,15 @@ func NewRaceService(opts ...RaceServiceOpt) (*RaceService, error) {
 }
 
 // CreateRace makes a new race
-func (s *RaceService) CreateRace(opts ...RaceOpt) (*Race, error) {
+func (s *RaceService) CreateRace(playerID int, trackID int) (*Race, error) {
 	id := len(s.Races) + 1
 
-	opts = append(opts, WithID(id))
-
-	race, err := NewRace(opts...)
+	race, err := NewRace(
+		WithID(id),
+		WithPlayerID(playerID),
+		WithCars(s.Cars),
+		WithTrack(s.Tracks[trackID]),
+	)
 	if err != nil {
 		return nil, err
 	}
