@@ -32,17 +32,9 @@ func NewServer(service *RaceService) (*Server, error) {
 // to help configure it.
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// if r.Method == http.MethodOptions {
 	w.Header().Set("Access-Control-Allow-Origin", "http://lvh.me:3000")
-	// w.Header().Set("Content-Type", "application/json")
-	// 	w.Header().Add("Access-Control-Allow-Headers", "*")
-	// 	w.WriteHeader(200)
-	// 	return
-	// }
 
 	s.router.ServeHTTP(w, r)
-
-	// fmt.Printf("+%v", r)
 }
 
 func makeRouter(service *RaceService) http.Handler {
@@ -59,6 +51,7 @@ func makeRouter(service *RaceService) http.Handler {
 	r.HandleFunc("/races", listRaces(service)).Methods("GET")
 	r.HandleFunc("/races", createRace(service)).Methods("POST")
 	r.HandleFunc("/races/{raceID}", getRace(service)).Methods("GET")
+	r.HandleFunc("/races/{raceID}/start", startRace(service)).Methods("POST")
 	r.HandleFunc("/races/{raceID}/accelerate", accelerate(service)).Methods("POST")
 
 	r.HandleFunc("/", notFound)
@@ -69,7 +62,28 @@ func makeRouter(service *RaceService) http.Handler {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	return handlers.CORS(headersOk, methodsOk)(router)
-	// return router
+}
+
+func startRace(service *RaceService) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+
+		raceID, err := strconv.ParseUint(params["raceID"], 10, 64)
+		if err != nil {
+			panicErr(err)
+		}
+
+		race, err := service.GetRace(uint(raceID))
+		if err != nil {
+			panicErr(err)
+			return
+		}
+
+		if err = race.Start(); err != nil {
+			panicErr(err)
+			return
+		}
+	})
 }
 
 func accelerate(service *RaceService) http.HandlerFunc {
