@@ -29,7 +29,7 @@ bin:
 build: bin
 	go build ${LDFLAGS} -o ${BINARY}
 
-build_all:
+build_all: clean
 	$(foreach GOOS, $(PLATFORMS),\
 	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); go build -v -o bin/$(BINARY)-$(GOOS)-$(GOARCH))))
 

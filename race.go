@@ -20,9 +20,14 @@ type Race struct {
 
 // NewRace constructs a Race from the provided options
 func NewRace(opts ...RaceOpt) (*Race, error) {
+	results := &RaceResults{
+		Status: Unstarted,
+	}
+
 	r := Race{
 		actionCh: make(chan int),
 		closeCh:  make(chan struct{}),
+		Results:  results,
 	}
 
 	for _, opt := range opts {
@@ -161,6 +166,9 @@ type withCars struct {
 
 func (opt *withCars) Apply(r *Race) error {
 	r.Cars = opt.cars
+	for _, car := range opt.cars {
+		r.Results.Positions = append(r.Results.Positions, &CarPosition{Car: *car})
+	}
 
 	return nil
 }

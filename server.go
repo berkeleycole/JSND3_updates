@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -30,7 +32,17 @@ func NewServer(service *RaceService) (*Server, error) {
 // to help configure it.
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// if r.Method == http.MethodOptions {
+	w.Header().Set("Access-Control-Allow-Origin", "http://lvh.me:3000")
+	// w.Header().Set("Content-Type", "application/json")
+	// 	w.Header().Add("Access-Control-Allow-Headers", "*")
+	// 	w.WriteHeader(200)
+	// 	return
+	// }
+
 	s.router.ServeHTTP(w, r)
+
+	// fmt.Printf("+%v", r)
 }
 
 func makeRouter(service *RaceService) http.Handler {
@@ -52,7 +64,12 @@ func makeRouter(service *RaceService) http.Handler {
 	r.HandleFunc("/", notFound)
 	router.HandleFunc("/", notFound)
 
-	return router
+	headersOk := handlers.AllowedHeaders([]string{"Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Allow-Origin"})
+	// originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
+	return handlers.CORS(headersOk, methodsOk)(router)
+	// return router
 }
 
 func accelerate(service *RaceService) http.HandlerFunc {
@@ -112,10 +129,16 @@ func createRace(service *RaceService) http.HandlerFunc {
 		race, err := service.CreateRace(params.PlayerID, params.TrackID)
 		if err != nil {
 			panicErr(err)
+			return
 		}
 
 		err = json.NewEncoder(w).Encode(race)
 		panicErr(err)
+
+		// go func() {
+		// 	time.Sleep(3)
+		// 	race.Start()
+		// }()
 	})
 }
 
@@ -153,6 +176,7 @@ func unimplemented(w http.ResponseWriter, r *http.Request) {
 
 func panicErr(err error) {
 	if err != nil {
+		log.Printf("got an error: %v", err)
 		panic(err)
 	}
 }
