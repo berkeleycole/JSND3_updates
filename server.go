@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -43,15 +44,55 @@ func makeRouter(service *RaceService) http.Handler {
 	r.HandleFunc("/tracks", listTracks(service)).Methods("GET")
 
 	// races
-	r.HandleFunc("/races", unimplemented).Methods("GET")
-	r.HandleFunc("/races", unimplemented).Methods("POST")
-	r.HandleFunc("/races/{raceID}", unimplemented).Methods("GET")
-	r.HandleFunc("/races/{raceID}", unimplemented).Methods("POST")
+	r.HandleFunc("/races", listRaces(service)).Methods("GET")
+	r.HandleFunc("/races", createRace(service)).Methods("POST")
+	r.HandleFunc("/races/{raceID}", getRace(service)).Methods("GET")
+	r.HandleFunc("/races/{raceID}/accelerate", accelerate(service)).Methods("POST")
 
 	r.HandleFunc("/", notFound)
 	router.HandleFunc("/", notFound)
 
 	return router
+}
+
+func accelerate(service *RaceService) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+
+		raceID, err := strconv.ParseUint(params["raceID"], 10, 64)
+		if err != nil {
+			panicErr(err)
+		}
+
+		err = service.Accelerate(uint(raceID))
+		if err != nil {
+			panicErr(err)
+			return
+		}
+	})
+}
+
+func getRace(service *RaceService) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+
+		raceID, err := strconv.ParseUint(params["raceID"], 10, 64)
+		if err != nil {
+			panicErr(err)
+		}
+
+		race, err := service.GetRace(uint(raceID))
+		if err != nil {
+			panicErr(err)
+			return
+		}
+
+		err = json.NewEncoder(w).Encode(race.Results)
+		if err != nil {
+			panicErr(err)
+			return
+		}
+	})
 }
 
 type createRaceParams struct {
@@ -79,12 +120,6 @@ func createRace(service *RaceService) http.HandlerFunc {
 }
 
 func thing() {
-	// params := mux.Vars(r)
-	//
-	// raceID, err := strconv.ParseInt(params["raceID"])
-	// if err != nil {
-	//     panicErr(err)
-	// }
 }
 
 func listRaces(service *RaceService) http.HandlerFunc {
