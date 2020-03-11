@@ -125,6 +125,10 @@ func (r *Race) loop() {
 // Accelerate handles the action from the user to increase the speed
 // Acceleration sets the cap for this.
 func (r *Race) Accelerate() error {
+	if r.actionCh == nil {
+		return nil
+	}
+
 	r.actionCh <- 0
 
 	return nil
