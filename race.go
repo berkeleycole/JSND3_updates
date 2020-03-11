@@ -39,16 +39,6 @@ func NewRace(opts ...RaceOpt) (*Race, error) {
 	return &r, nil
 }
 
-/*
-
-Actions:
-	- Start
-	- Finish
-	- Refresh (passing of time) - computes the location of each car on the track based on speed
-	- HandleAction - handles the "click" from the user
-
-*/
-
 // Start starts a race
 func (r *Race) Start() error {
 	if r.Results.Status != Unstarted {
@@ -94,7 +84,12 @@ func (r *Race) Refresh() (*RaceResults, error) {
 			car.Speed = car.TopSpeed
 		}
 
+		if car.Speed <= 0 {
+			car.Speed = 0
+		}
+
 		car.Segment = car.Segment + (car.Speed / 30)
+
 		if car.Segment >= len(r.Track.Segments) {
 			car.Segment = len(r.Track.Segments)
 			finishPosition++
