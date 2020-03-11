@@ -11,6 +11,7 @@ type Race struct {
 	Track                *Track
 	PlayerID             int
 	clicksSinceLastCheck int
+	finishPosition       int
 	Cars                 []*Car
 	Results              *RaceResults
 	actionCh             chan int
@@ -66,9 +67,12 @@ func (r *Race) Finish() error {
 // based on speed and acceleration
 func (r *Race) Refresh() (*RaceResults, error) {
 	raceFinished := true
-	finishPosition := 0
 
 	for _, car := range r.Results.Positions {
+		if car.FinalPosition > 0 {
+			continue
+		}
+
 		if car.ID == r.PlayerID {
 			if r.clicksSinceLastCheck > 0 {
 				car.Speed = car.Speed + (car.Acceleration / 1) + r.clicksSinceLastCheck
@@ -92,8 +96,8 @@ func (r *Race) Refresh() (*RaceResults, error) {
 
 		if car.Segment >= len(r.Track.Segments) {
 			car.Segment = len(r.Track.Segments)
-			finishPosition++
-			car.FinalPosition = finishPosition
+			r.finishPosition++
+			car.FinalPosition = r.finishPosition
 		} else {
 			raceFinished = false
 		}
