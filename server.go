@@ -93,6 +93,7 @@ func accelerate(service *RaceService) http.HandlerFunc {
 		raceID, err := strconv.ParseUint(params["raceID"], 10, 64)
 		if err != nil {
 			panicErr(err)
+			return
 		}
 
 		err = service.Accelerate(uint(raceID))
