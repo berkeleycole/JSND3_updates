@@ -71,10 +71,10 @@ func (r *Race) Refresh() (*RaceResults, error) {
 	for _, car := range r.Results.Positions {
 		if car.ID == r.PlayerID {
 			if r.clicksSinceLastCheck > 0 {
-				car.Speed = car.Speed + (car.Acceleration / 3) + r.clicksSinceLastCheck
+				car.Speed = car.Speed + (car.Acceleration / 1) + r.clicksSinceLastCheck
 				r.clicksSinceLastCheck = 0
 			} else {
-				car.Speed = car.Speed - 20
+				car.Speed = car.Speed - 5
 			}
 		} else {
 			car.Speed = car.Speed + car.Acceleration
