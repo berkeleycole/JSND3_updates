@@ -14,6 +14,11 @@ func init() {
 	if dataFile == "" {
 		dataFile = "data.json"
 	}
+
+	addr = os.Getenv("ADDR")
+	if addr == "" {
+		addr = "0.0.0.0:3001"
+	}
 }
 
 func main() {
@@ -29,7 +34,7 @@ func main() {
 
 	srv := &http.Server{
 		Handler:      server,
-		Addr:         "0.0.0.0:8000",
+		Addr:         addr,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
