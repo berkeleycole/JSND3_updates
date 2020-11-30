@@ -8,6 +8,7 @@ import (
 )
 
 var dataFile string
+var addr string
 
 func init() {
 	dataFile = os.Getenv("DATA_FILE")
