@@ -129,7 +129,7 @@ func getRace(service *RaceService) http.HandlerFunc {
 
 type createRaceParams struct {
 	PlayerID int `json:"player_id"`
-	TrackID  int `json:"tack_id"`
+	TrackID  int `json:"track_id"`
 }
 
 func createRace(service *RaceService) http.HandlerFunc {

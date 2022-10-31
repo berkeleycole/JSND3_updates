@@ -36,7 +36,7 @@ func (s *RaceService) CreateRace(playerID int, trackID int) (*Race, error) {
 		WithID(id),
 		WithPlayerID(playerID),
 		WithCars(s.Cars),
-		WithTrack(s.Tracks[trackID]),
+		WithTrack(s.Tracks[trackID - 1]),
 	)
 	if err != nil {
 		return nil, err
